@@ -1,5 +1,4 @@
 /// <reference types="@sveltejs/kit" />
-/// <reference types="@sveltejs/adapter-cloudflare" />
 
 declare global {
 	namespace App {
@@ -9,6 +8,8 @@ declare global {
 				TURNSTILE_SECRET_KEY: string;
 				BYPASS_KEY: string;
 			};
+			ctx: ExecutionContext;
+			caches: CacheStorage;
 		}
 	}
 }
