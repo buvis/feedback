@@ -158,6 +158,23 @@ describe('form action', () => {
 		});
 	});
 
+	describe('platform env', () => {
+		it('returns 500 when platform.env is missing', async () => {
+			const formData = makeFormData(validFields);
+			const event = {
+				request: { formData: () => Promise.resolve(formData) },
+				platform: undefined
+			} as Parameters<typeof actions.default>[0];
+			const result = await actions.default(event);
+
+			expect(result).toHaveProperty('status', 500);
+			expect(result).toHaveProperty(
+				'data.error',
+				'Server configuration error. Please try again later.'
+			);
+		});
+	});
+
 	describe('turnstile verification', () => {
 		it('rejects submission with missing turnstile token', async () => {
 			const fields = { ...validFields };
@@ -171,6 +188,17 @@ describe('form action', () => {
 
 		it('rejects submission when turnstile verification fails', async () => {
 			mockTurnstileFailure();
+			const event = makeEvent(validFields);
+			const result = await actions.default(event);
+
+			expect(result).toHaveProperty('status', 403);
+		});
+
+		it('rejects submission when turnstile API returns non-OK HTTP status', async () => {
+			mockFetch.mockResolvedValueOnce({
+				ok: false,
+				status: 500
+			});
 			const event = makeEvent(validFields);
 			const result = await actions.default(event);
 
