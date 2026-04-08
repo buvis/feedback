@@ -138,6 +138,17 @@ describe('createGitHubIssue', () => {
 			/403.*Resource not accessible by integration/
 		);
 	});
+
+	it('handles non-JSON error responses gracefully', async () => {
+		mockFetch.mockResolvedValueOnce({
+			ok: false,
+			status: 502,
+			statusText: 'Bad Gateway',
+			json: () => Promise.reject(new SyntaxError('Unexpected token'))
+		});
+
+		await expect(createGitHubIssue(validParams)).rejects.toThrow(/502.*Bad Gateway/);
+	});
 });
 
 describe('formatIssueBody', () => {

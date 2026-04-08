@@ -29,8 +29,14 @@ export async function createGitHubIssue(params: CreateIssueParams): Promise<stri
 	});
 
 	if (!response.ok) {
-		const error = await response.json();
-		throw new Error(`GitHub API error ${response.status}: ${error.message}`);
+		let message = `status ${response.status}`;
+		try {
+			const error = await response.json();
+			message = `${response.status}: ${error.message}`;
+		} catch {
+			message = `${response.status}: ${response.statusText}`;
+		}
+		throw new Error(`GitHub API error ${message}`);
 	}
 
 	const data = await response.json();

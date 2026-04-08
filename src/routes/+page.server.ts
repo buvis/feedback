@@ -4,16 +4,20 @@ import { createGitHubIssue, formatIssueBody, formatIssueTitle } from '$lib/githu
 import type { Actions } from './$types';
 
 async function verifyTurnstile(token: string, secret: string): Promise<boolean> {
-	const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		body: new URLSearchParams({ secret, response: token })
-	});
+	try {
+		const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams({ secret, response: token })
+		});
 
-	if (!response.ok) return false;
+		if (!response.ok) return false;
 
-	const result = await response.json();
-	return result.success === true;
+		const result = await response.json();
+		return result.success === true;
+	} catch {
+		return false;
+	}
 }
 
 export const actions = {
