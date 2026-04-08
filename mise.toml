@@ -1,2 +1,2 @@
-[task_config]
-includes = ["dev/bin"]
+[env]
+_.path = ["dev/bin"]
