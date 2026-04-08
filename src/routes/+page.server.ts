@@ -38,61 +38,35 @@ export const actions = {
 		const trimmedTitle = title?.trim() ?? '';
 		const trimmedDescription = description?.trim() ?? '';
 
+		const formState = { title: trimmedTitle, description: trimmedDescription, type: type ?? '' };
+
 		if (!type || !trimmedTitle || !trimmedDescription) {
-			return fail(400, {
-				error: 'Please fill in all required fields.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+			return fail(400, { error: 'Please fill in all required fields.', ...formState });
 		}
 
-		if (!FEEDBACK_TYPES.includes(type as typeof FEEDBACK_TYPES[number])) {
-			return fail(400, {
-				error: 'Invalid feedback type.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+		if (!FEEDBACK_TYPES.includes(type as (typeof FEEDBACK_TYPES)[number])) {
+			return fail(400, { error: 'Invalid feedback type.', ...formState });
 		}
 
 		if (trimmedTitle.length > 200) {
-			return fail(400, {
-				error: 'Title must be 200 characters or fewer.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+			return fail(400, { error: 'Title must be 200 characters or fewer.', ...formState });
 		}
 
 		if (trimmedDescription.length > 5000) {
-			return fail(400, {
-				error: 'Description must be 5000 characters or fewer.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+			return fail(400, { error: 'Description must be 5000 characters or fewer.', ...formState });
 		}
 
 		if (project && !REPO_MAP[project]) {
-			return fail(400, {
-				error: 'Unknown project.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+			return fail(400, { error: 'Unknown project.', ...formState });
 		}
 
 		const env = platform?.env;
 		if (!env) {
-			return fail(500, {
-				error: 'Server configuration error. Please try again later.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+			return fail(500, { error: 'Server configuration error. Please try again later.', ...formState });
 		}
 
 		if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY))) {
-			return fail(403, {
-				error: 'Verification failed. Please try again.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+			return fail(403, { error: 'Verification failed. Please try again.', ...formState });
 		}
 
 		const repo = project ? REPO_MAP[project] : 'buvis/gems';
@@ -117,11 +91,7 @@ export const actions = {
 			return { success: true, issueUrl };
 		} catch (err) {
 			console.error('GitHub issue creation failed:', err);
-			return fail(500, {
-				error: 'Could not create issue. Please try again later.',
-				title: trimmedTitle,
-				description: trimmedDescription
-			});
+			return fail(500, { error: 'Could not create issue. Please try again later.', ...formState });
 		}
 	}
 } satisfies Actions;

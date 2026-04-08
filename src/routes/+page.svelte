@@ -85,7 +85,7 @@
 				<label for="type" class="label">Type</label>
 				<select id="type" name="type" class="select" required>
 					{#each FEEDBACK_TYPES as t}
-						<option value={t}>{t}</option>
+						<option value={t} selected={form?.type === t}>{t}</option>
 					{/each}
 				</select>
 			</div>

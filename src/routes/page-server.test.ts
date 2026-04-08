@@ -194,6 +194,15 @@ describe('form action', () => {
 			expect(result).toHaveProperty('status', 403);
 		});
 
+		it('rejects submission when turnstile fetch throws (network failure)', async () => {
+			mockFetch.mockRejectedValueOnce(new TypeError('fetch failed'));
+			const event = makeEvent(validFields);
+			const result = await actions.default(event);
+
+			expect(result).toHaveProperty('status', 403);
+			expect(result).toHaveProperty('data.error', 'Verification failed. Please try again.');
+		});
+
 		it('rejects submission when turnstile API returns non-OK HTTP status', async () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
