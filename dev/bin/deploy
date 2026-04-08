@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+npm run build
+npx wrangler pages deploy .svelte-kit/cloudflare --project-name buvis-feedback

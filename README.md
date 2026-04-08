@@ -30,25 +30,29 @@ Create a [fine-grained PAT](https://github.com/settings/personal-access-tokens/n
 openssl rand -hex 32
 ```
 
-### 4. Connect repo to Cloudflare Pages
+### 4. Set up Cloudflare Pages
 
-In Cloudflare Pages, create a new project connected to this GitHub repo.
+Create a Pages project with `npx wrangler pages project create buvis-feedback`, then set secrets:
 
-Build settings:
-- Framework preset: **SvelteKit**
-- Build command: `npm run build`
-- Build output directory: `.svelte-kit/cloudflare`
+```bash
+npx wrangler pages secret put GITHUB_PAT           # PAT from step 2
+npx wrangler pages secret put TURNSTILE_SECRET_KEY  # secret key from step 1
+npx wrangler pages secret put BYPASS_KEY            # key from step 3
+```
 
-### 5. Set environment variables
+### 5. Deploy
 
-In Cloudflare Pages -> Settings -> Environment Variables:
+Set the Turnstile site key in `.env` (used at build time, gitignored):
 
-| Variable | Type | Value |
-|----------|------|-------|
-| `PUBLIC_TURNSTILE_SITE_KEY` | Build-time (plaintext) | Site key from step 1 |
-| `GITHUB_PAT` | Secret (encrypted) | PAT from step 2 |
-| `TURNSTILE_SECRET_KEY` | Secret (encrypted) | Secret key from step 1 |
-| `BYPASS_KEY` | Secret (encrypted) | Key from step 3 |
+```bash
+cp .env.example .env  # fill in PUBLIC_TURNSTILE_SITE_KEY with site key from step 1
+```
+
+Then build and deploy:
+
+```bash
+mise run deploy
+```
 
 ### 6. DNS
 
