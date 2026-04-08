@@ -22,8 +22,17 @@
 	let submitting = $state(false);
 	let turnstileContainer = $state<HTMLDivElement>();
 
+	if (typeof window !== 'undefined') {
+		(window as any).onTurnstileSuccess = () => {
+			if (turnstileContainer) {
+				turnstileContainer.style.display = 'none';
+			}
+		};
+	}
+
 	function resetTurnstile() {
 		if (typeof window !== 'undefined' && 'turnstile' in window && turnstileContainer) {
+			turnstileContainer.style.display = '';
 			const turnstile = window.turnstile as { reset: (el: HTMLElement) => void };
 			turnstile.reset(turnstileContainer);
 		}
@@ -134,6 +143,7 @@
 					class="cf-turnstile"
 					data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}
 					data-theme="light"
+					data-callback="onTurnstileSuccess"
 				></div>
 			</div>
 
