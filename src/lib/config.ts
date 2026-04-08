@@ -2,8 +2,6 @@ export const REPO_MAP: Record<string, string> = {
 	'buvis-gems': 'buvis/gems'
 };
 
-export const TURNSTILE_SITE_KEY = '0x4AAAAAAA_PLACEHOLDER_KEY';
-
 export const FEEDBACK_TYPE_LABELS: Record<string, string[]> = {
 	'Bug Report': ['feedback', 'bug'],
 	'Feature Request': ['feedback', 'enhancement'],

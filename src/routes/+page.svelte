@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
-	import { TURNSTILE_SITE_KEY, FEEDBACK_TYPES } from '$lib/config';
+	import { FEEDBACK_TYPES } from '$lib/config';
+	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
 
 	let { form } = $props();
 
@@ -131,7 +132,7 @@
 			<div class="turnstile-container" bind:this={turnstileContainer}>
 				<div
 					class="cf-turnstile"
-					data-sitekey={TURNSTILE_SITE_KEY}
+					data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}
 					data-theme="light"
 				></div>
 			</div>

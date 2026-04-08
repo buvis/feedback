@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { REPO_MAP, TURNSTILE_SITE_KEY, FEEDBACK_TYPE_LABELS, FEEDBACK_TYPES } from '$lib/config';
+import { REPO_MAP, FEEDBACK_TYPE_LABELS, FEEDBACK_TYPES } from '$lib/config';
 
 describe('REPO_MAP', () => {
 	it('maps buvis-gems to buvis/gems', () => {
@@ -8,13 +8,6 @@ describe('REPO_MAP', () => {
 
 	it('returns undefined for unknown projects', () => {
 		expect(REPO_MAP['unknown-project']).toBeUndefined();
-	});
-});
-
-describe('TURNSTILE_SITE_KEY', () => {
-	it('is a non-empty string', () => {
-		expect(typeof TURNSTILE_SITE_KEY).toBe('string');
-		expect(TURNSTILE_SITE_KEY.length).toBeGreaterThan(0);
 	});
 });
 
