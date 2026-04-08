@@ -118,6 +118,29 @@ describe('form action', () => {
 			);
 		});
 
+		it('rejects invalid feedback type', async () => {
+			const event = makeEvent({ ...validFields, type: '<script>alert(1)</script>' });
+			const result = await actions.default(event);
+
+			expect(result).toHaveProperty('status', 400);
+			expect(result).toHaveProperty('data.error', 'Invalid feedback type.');
+		});
+
+		it('rejects whitespace-only title', async () => {
+			const event = makeEvent({ ...validFields, title: '   ' });
+			const result = await actions.default(event);
+
+			expect(result).toHaveProperty('status', 400);
+			expect(result).toHaveProperty('data.error', 'Please fill in all required fields.');
+		});
+
+		it('rejects whitespace-only description', async () => {
+			const event = makeEvent({ ...validFields, description: '  \n  ' });
+			const result = await actions.default(event);
+
+			expect(result).toHaveProperty('status', 400);
+		});
+
 		it('rejects unknown project', async () => {
 			const event = makeEvent({ ...validFields, project: 'unknown-project' });
 			const result = await actions.default(event);

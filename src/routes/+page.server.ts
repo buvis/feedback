@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { REPO_MAP, FEEDBACK_TYPE_LABELS } from '$lib/config';
+import { REPO_MAP, FEEDBACK_TYPE_LABELS, FEEDBACK_TYPES } from '$lib/config';
 import { createGitHubIssue, formatIssueBody, formatIssueTitle } from '$lib/github';
 import type { Actions } from './$types';
 
@@ -31,35 +31,46 @@ export const actions = {
 		const turnstileToken = data.get('cf-turnstile-response') as string | null;
 		const bypassKey = (data.get('key') as string) || undefined;
 
-		if (!type || !title || !description) {
+		const trimmedTitle = title?.trim() ?? '';
+		const trimmedDescription = description?.trim() ?? '';
+
+		if (!type || !trimmedTitle || !trimmedDescription) {
 			return fail(400, {
 				error: 'Please fill in all required fields.',
-				title: title ?? '',
-				description: description ?? ''
+				title: trimmedTitle,
+				description: trimmedDescription
 			});
 		}
 
-		if (title.length > 200) {
+		if (!FEEDBACK_TYPES.includes(type as typeof FEEDBACK_TYPES[number])) {
+			return fail(400, {
+				error: 'Invalid feedback type.',
+				title: trimmedTitle,
+				description: trimmedDescription
+			});
+		}
+
+		if (trimmedTitle.length > 200) {
 			return fail(400, {
 				error: 'Title must be 200 characters or fewer.',
-				title,
-				description
+				title: trimmedTitle,
+				description: trimmedDescription
 			});
 		}
 
-		if (description.length > 5000) {
+		if (trimmedDescription.length > 5000) {
 			return fail(400, {
 				error: 'Description must be 5000 characters or fewer.',
-				title,
-				description
+				title: trimmedTitle,
+				description: trimmedDescription
 			});
 		}
 
 		if (project && !REPO_MAP[project]) {
 			return fail(400, {
 				error: 'Unknown project.',
-				title,
-				description
+				title: trimmedTitle,
+				description: trimmedDescription
 			});
 		}
 
@@ -67,16 +78,16 @@ export const actions = {
 		if (!env) {
 			return fail(500, {
 				error: 'Server configuration error. Please try again later.',
-				title,
-				description
+				title: trimmedTitle,
+				description: trimmedDescription
 			});
 		}
 
 		if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY))) {
 			return fail(403, {
 				error: 'Verification failed. Please try again.',
-				title,
-				description
+				title: trimmedTitle,
+				description: trimmedDescription
 			});
 		}
 
@@ -87,8 +98,8 @@ export const actions = {
 			labels.push('accepted');
 		}
 
-		const issueTitle = formatIssueTitle(type, title);
-		const issueBody = formatIssueBody({ description, tool, version, os, python });
+		const issueTitle = formatIssueTitle(type, trimmedTitle);
+		const issueBody = formatIssueBody({ description: trimmedDescription, tool, version, os, python });
 
 		try {
 			const issueUrl = await createGitHubIssue({
@@ -100,11 +111,12 @@ export const actions = {
 			});
 
 			return { success: true, issueUrl };
-		} catch {
+		} catch (err) {
+			console.error('GitHub issue creation failed:', err);
 			return fail(500, {
 				error: 'Could not create issue. Please try again later.',
-				title,
-				description
+				title: trimmedTitle,
+				description: trimmedDescription
 			});
 		}
 	}
