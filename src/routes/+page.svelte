@@ -18,6 +18,15 @@
 	);
 
 	let devOpen = $state(false);
+	let submitting = $state(false);
+	let turnstileContainer = $state<HTMLDivElement>();
+
+	function resetTurnstile() {
+		if (typeof window !== 'undefined' && 'turnstile' in window && turnstileContainer) {
+			const turnstile = window.turnstile as { reset: (el: HTMLElement) => void };
+			turnstile.reset(turnstileContainer);
+		}
+	}
 </script>
 
 {#if form?.success}
@@ -74,7 +83,7 @@
 			</div>
 		{/if}
 
-		<form method="POST" use:enhance class="form">
+		<form method="POST" use:enhance={() => { submitting = true; return async ({ update }) => { await update(); submitting = false; resetTurnstile(); }; }} class="form">
 			<input type="hidden" name="project" value={params.project} />
 			<input type="hidden" name="tool" value={params.tool} />
 			<input type="hidden" name="version" value={params.version} />
@@ -119,7 +128,7 @@
 				<span class="hint">Max 5000 characters</span>
 			</div>
 
-			<div class="turnstile-container">
+			<div class="turnstile-container" bind:this={turnstileContainer}>
 				<div
 					class="cf-turnstile"
 					data-sitekey={TURNSTILE_SITE_KEY}
@@ -141,7 +150,9 @@
 				</div>
 			</details>
 
-			<button type="submit" class="btn btn-primary">Submit feedback</button>
+			<button type="submit" class="btn btn-primary" disabled={submitting}>
+				{submitting ? 'Submitting...' : 'Submit feedback'}
+			</button>
 		</form>
 
 		<div class="privacy">

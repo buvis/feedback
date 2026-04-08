@@ -3,6 +3,18 @@ import { REPO_MAP, FEEDBACK_TYPE_LABELS, FEEDBACK_TYPES } from '$lib/config';
 import { createGitHubIssue, formatIssueBody, formatIssueTitle } from '$lib/github';
 import type { Actions } from './$types';
 
+function timingSafeEqual(a: string, b: string): boolean {
+	if (a.length !== b.length) return false;
+	const encoder = new TextEncoder();
+	const bufA = encoder.encode(a);
+	const bufB = encoder.encode(b);
+	let result = 0;
+	for (let i = 0; i < bufA.length; i++) {
+		result |= bufA[i] ^ bufB[i];
+	}
+	return result === 0;
+}
+
 async function verifyTurnstile(token: string, secret: string): Promise<boolean> {
 	try {
 		const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -72,7 +84,7 @@ export const actions = {
 		const repo = project ? REPO_MAP[project] : 'buvis/gems';
 		const labels = [...(FEEDBACK_TYPE_LABELS[type] ?? ['feedback'])];
 
-		if (bypassKey && env.BYPASS_KEY && bypassKey === env.BYPASS_KEY) {
+		if (bypassKey && env.BYPASS_KEY && timingSafeEqual(bypassKey, env.BYPASS_KEY)) {
 			labels.push('accepted');
 		}
 
