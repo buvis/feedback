@@ -81,8 +81,8 @@
 		{:else}
 			<div class="context-bar context-bar-empty">
 				<p>
-					Normally you'd arrive here from a buvis CLI tool via <code>--feedback</code>.
-					You can still submit feedback manually.
+					Normally you'd arrive here from a buvis CLI tool via <code>--feedback</code>. You can
+					still submit feedback manually.
 				</p>
 			</div>
 		{/if}
@@ -93,7 +93,18 @@
 			</div>
 		{/if}
 
-		<form method="POST" use:enhance={() => { submitting = true; return async ({ update }) => { await update(); submitting = false; resetTurnstile(); }; }} class="form">
+		<form
+			method="POST"
+			use:enhance={() => {
+				submitting = true;
+				return async ({ update }) => {
+					await update();
+					submitting = false;
+					resetTurnstile();
+				};
+			}}
+			class="form"
+		>
 			<input type="hidden" name="project" value={params.project} />
 			<input type="hidden" name="tool" value={params.tool} />
 			<input type="hidden" name="version" value={params.version} />
@@ -134,7 +145,8 @@
 					maxlength="5000"
 					rows="6"
 					placeholder="Describe what happened, what you expected, or what you'd like to see"
-				>{form?.description ?? ''}</textarea>
+					>{form?.description ?? ''}</textarea
+				>
 				<span class="hint">Max 5000 characters</span>
 			</div>
 
@@ -151,13 +163,7 @@
 				<summary class="dev-toggle">Developer</summary>
 				<div class="field">
 					<label for="key" class="label">Bypass key</label>
-					<input
-						id="key"
-						name="key"
-						type="password"
-						class="input input-mono"
-						autocomplete="off"
-					/>
+					<input id="key" name="key" type="password" class="input input-mono" autocomplete="off" />
 				</div>
 			</details>
 
@@ -169,9 +175,9 @@
 		<div class="privacy">
 			<h2>Privacy</h2>
 			<p>
-				This form collects your feedback title, description, and the environment
-				details shown above (tool name, version, OS, Python version). Your submission
-				creates a <strong>public</strong> GitHub Issue on the
+				This form collects your feedback title, description, and the environment details shown above
+				(tool name, version, OS, Python version). Your submission creates a <strong>public</strong>
+				GitHub Issue on the
 				<a href="https://github.com/buvis/gems" target="_blank" rel="noopener">buvis/gems</a>
 				repository. No personal data is collected unless you include it in your description.
 			</p>

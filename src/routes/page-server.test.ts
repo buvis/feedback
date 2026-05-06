@@ -112,10 +112,7 @@ describe('form action', () => {
 			const result = await actions.default(event);
 
 			expect(result).toHaveProperty('status', 400);
-			expect(result).toHaveProperty(
-				'data.error',
-				'Description must be 5000 characters or fewer.'
-			);
+			expect(result).toHaveProperty('data.error', 'Description must be 5000 characters or fewer.');
 		});
 
 		it('rejects invalid feedback type', async () => {

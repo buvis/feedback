@@ -77,8 +77,7 @@ describe('createGitHubIssue', () => {
 		mockFetch.mockResolvedValueOnce({
 			ok: true,
 			status: 201,
-			json: () =>
-				Promise.resolve({ html_url: 'https://github.com/buvis/gems/issues/42' })
+			json: () => Promise.resolve({ html_url: 'https://github.com/buvis/gems/issues/42' })
 		});
 
 		const url = await createGitHubIssue(validParams);
@@ -110,8 +109,7 @@ describe('createGitHubIssue', () => {
 		mockFetch.mockResolvedValueOnce({
 			ok: false,
 			status: 422,
-			json: () =>
-				Promise.resolve({ message: 'Validation Failed', errors: [{ code: 'invalid' }] })
+			json: () => Promise.resolve({ message: 'Validation Failed', errors: [{ code: 'invalid' }] })
 		});
 
 		await expect(createGitHubIssue(validParams)).rejects.toThrow('422');

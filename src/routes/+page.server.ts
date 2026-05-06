@@ -74,7 +74,10 @@ export const actions = {
 
 		const env = platform?.env;
 		if (!env) {
-			return fail(500, { error: 'Server configuration error. Please try again later.', ...formState });
+			return fail(500, {
+				error: 'Server configuration error. Please try again later.',
+				...formState
+			});
 		}
 
 		if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY))) {
@@ -89,7 +92,13 @@ export const actions = {
 		}
 
 		const issueTitle = formatIssueTitle(type, trimmedTitle);
-		const issueBody = formatIssueBody({ description: trimmedDescription, tool, version, os, python });
+		const issueBody = formatIssueBody({
+			description: trimmedDescription,
+			tool,
+			version,
+			os,
+			python
+		});
 
 		try {
 			const issueUrl = await createGitHubIssue({
