@@ -1,0 +1,64 @@
+# See https://pre-commit.com for usage and config reference.
+# Install with: pre-commit install --install-hooks
+
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+fail_fast: false
+
+repos:
+  # ── General hygiene ──────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: detect-private-key
+
+  # ── Secret scanning ──────────────────────────────────────────────
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+
+  # ── Conventional commits (commit-msg) ────────────────────────────
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.6.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args:
+          - --strict
+          - fix
+          - feat
+          - perf
+          - refactor
+          - style
+          - test
+          - docs
+          - build
+          - ops
+          - chore
+
+  # ── Project tooling (local; uses package.json devDeps) ───────────
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: npx --no-install prettier --write
+        language: system
+        types_or: [ts, javascript, svelte, css, json, markdown, yaml]
+
+      - id: svelte-check
+        name: svelte-check
+        entry: npm run -s check
+        language: system
+        pass_filenames: false
+        files: \.(ts|js|svelte)$|^(svelte\.config\.js|tsconfig\.json|vite\.config\.ts)$
